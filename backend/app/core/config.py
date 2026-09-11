@@ -24,6 +24,18 @@ class Settings(BaseSettings):
                 url = f"postgresql://{url}"
             if url.startswith("postgres://"):
                 url = url.replace("postgres://", "postgresql://", 1)
+            
+            import re
+            # Fix if the user literally pasted [password] with the brackets
+            url = re.sub(r'\[(.*?)\]@', r'\1@', url)
+            
+            # Fix if the user has an unencoded '@' symbol in their password
+            parts = url.split('@')
+            if len(parts) > 2:
+                credentials = "%40".join(parts[:-1])
+                host_and_beyond = parts[-1]
+                url = f"{credentials}@{host_and_beyond}"
+                
             return url
         
         if not self.DB_HOST:
