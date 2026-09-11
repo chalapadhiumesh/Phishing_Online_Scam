@@ -16,3 +16,5 @@ google-auth
 requests
 
 python-jose
+
+email-validator
