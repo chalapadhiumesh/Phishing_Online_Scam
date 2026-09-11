@@ -24,11 +24,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
-@app.get("/debug-db")
-def debug_db(db: Session = Depends(get_db)):
+@app.post("/debug-db")
+def debug_db_post(user_in: dict, db: Session = Depends(get_db)):
     try:
-        count = db.query(User).count()
-        return {"status": "success", "message": f"Connected to DB! User count: {count}"}
+        user_by_email = db.query(User).filter(User.email == user_in.get("email")).first()
+        from .core.security import get_password_hash
+        get_password_hash("testpassword")
+        return {"status": "success", "user_found": user_by_email is not None}
     except Exception as e:
         return {"status": "error", "message": str(e), "traceback": traceback.format_exc()}
 
