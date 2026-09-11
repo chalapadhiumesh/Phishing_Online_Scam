@@ -3,12 +3,12 @@ from pydantic import model_validator
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Phishing & Scam Intelligence Platform"
-    DB_HOST: str
-    DB_PORT: int
-    DB_NAME: str
-    DB_USER: str
-    DB_PASSWORD: str
-    SECRET_KEY: str
+    DB_HOST: str | None = None
+    DB_PORT: int | None = None
+    DB_NAME: str | None = None
+    DB_USER: str | None = None
+    DB_PASSWORD: str | None = None
+    SECRET_KEY: str = "default_secret_key_for_jwt_auth_must_be_changed_in_prod"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
     GOOGLE_CLIENT_ID: str = ""
