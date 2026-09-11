@@ -5,6 +5,9 @@ from .core.database import engine
 from .models import Base
 from .core.config import settings
 from .services.ml_service import ml_service
+from sqlalchemy.orm import Session
+from .core.database import get_db
+from .models.user import User
 
 # Create database tables safely
 import traceback
@@ -22,10 +25,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
 @app.get("/debug-db")
-def debug_db():
+def debug_db(db: Session = Depends(get_db)):
     try:
-        with engine.connect() as conn:
-            return {"status": "success", "message": "Connected to DB!"}
+        count = db.query(User).count()
+        return {"status": "success", "message": f"Connected to DB! User count: {count}"}
     except Exception as e:
         return {"status": "error", "message": str(e), "traceback": traceback.format_exc()}
 
