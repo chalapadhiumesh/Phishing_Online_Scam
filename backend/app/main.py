@@ -30,7 +30,21 @@ def debug_db_post(user_in: dict, db: Session = Depends(get_db)):
         user_by_email = db.query(User).filter(User.email == user_in.get("email")).first()
         from .core.security import get_password_hash
         get_password_hash("testpassword")
-        return {"status": "success", "user_found": user_by_email is not None}
+        
+        # Test ML loading
+        ml_error = None
+        try:
+            from .services.ml_service import ml_service
+            import os
+            import joblib
+            if os.path.exists(ml_service.url_model_path):
+                joblib.load(ml_service.url_model_path)
+            else:
+                ml_error = f"Path does not exist: {ml_service.url_model_path}"
+        except Exception as e:
+            ml_error = str(e)
+            
+        return {"status": "success", "user_found": user_by_email is not None, "ml_error": ml_error}
     except Exception as e:
         return {"status": "error", "message": str(e), "traceback": traceback.format_exc()}
 
