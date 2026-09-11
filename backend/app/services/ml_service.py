@@ -15,6 +15,11 @@ class MLService:
 
     def load_models(self):
         try:
+            import sys
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+            if base_dir not in sys.path:
+                sys.path.insert(0, base_dir)
+
             if os.path.exists(self.url_model_path):
                 self.url_model = joblib.load(self.url_model_path)
                 logger.info("URL Model loaded successfully.")
