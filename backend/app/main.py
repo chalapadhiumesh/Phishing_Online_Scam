@@ -6,8 +6,12 @@ from .models import Base
 from .core.config import settings
 from .services.ml_service import ml_service
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# Create database tables safely
+import traceback
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"DB init failed: {e}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,6 +20,14 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
+
+@app.get("/debug-db")
+def debug_db():
+    try:
+        with engine.connect() as conn:
+            return {"status": "success", "message": "Connected to DB!"}
+    except Exception as e:
+        return {"status": "error", "message": str(e), "traceback": traceback.format_exc()}
 
 from .routers import auth, dashboard, scanner, history
 
