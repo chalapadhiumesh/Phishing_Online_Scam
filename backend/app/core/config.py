@@ -19,7 +19,13 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL(self) -> str:
         if self.SUPABASE_DATABASE_URL:
+            if self.SUPABASE_DATABASE_URL.startswith("postgres://"):
+                return self.SUPABASE_DATABASE_URL.replace("postgres://", "postgresql://", 1)
             return self.SUPABASE_DATABASE_URL
+        
+        if not self.DB_HOST:
+            raise ValueError("CRITICAL ERROR: SUPABASE_DATABASE_URL is missing! Please add it to your Render Environment Variables.")
+            
         return f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8')
