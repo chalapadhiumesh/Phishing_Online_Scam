@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || '';
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'https://phishing-online-scam.onrender.com';
 
 // Globally configure Axios to attach the JWT token to every request
 axios.interceptors.request.use((config) => {
